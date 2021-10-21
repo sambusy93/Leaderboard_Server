@@ -28,7 +28,7 @@ app.use((_req: any, res: any, next: any) => {
 
 app.get('/game', async (req: Request, res: any): Promise<void> => {
     const Game_Name: string = req.headers.gameID as string;
-    console.log(`'Incoming GET request to /game... ' ${Game_Name}`);
+    console.log(`Incoming GET request to /game...  ${Game_Name}`);
 
 
     const GAME_URL = `http://speedrun.com/api/v1/games/${Game_Name}?embed=categories.variables`;

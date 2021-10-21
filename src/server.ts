@@ -21,13 +21,13 @@ const CACHE: ServerCache = { Games: {}, Runners: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, gameID');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, gameID, runnerID');
     next();
 });
 
 
 app.get('/game', async (req: Request, res: any): Promise<void> => {
-    const Game_Name: string = req.query.gameID as string;
+    const Game_Name: string = req.headers.gameID as string;
     console.log(`Incoming GET request to /game...  ${Game_Name}`);
 
 
@@ -52,7 +52,7 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 app.get('/runner', async (req: string, res: any): Promise<void> => {
     console.log('Incoming GET request to /runner...');
 
-    const Runner_ID = res.req.headers.runnerid;
+    const Runner_ID = res.req.headers.runnerID;
     const Runner_URL = `https://www.speedrun.com/api/v1/users/${Runner_ID}`;
 
     if (CACHE.Runners[Runner_ID] === undefined) {

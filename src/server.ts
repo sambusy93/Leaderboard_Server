@@ -27,7 +27,7 @@ app.use((_req: any, res: any, next: any) => {
 
 
 app.get('/game', async (req: Request, res: any): Promise<void> => {
-    const Game_Name: string = req.headers.gameID as string;
+    const Game_Name: string = req.query.gameID as string;
     console.log(`Incoming GET request to /game...  ${Game_Name}`);
 
 

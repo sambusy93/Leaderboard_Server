@@ -21,13 +21,13 @@ const CACHE: ServerCache = { Games: {}, Runners: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, gameID, runnerID');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, gameIdentifier, runnerID');
     next();
 });
 
 
 app.get('/game', async (req: Request, res: any): Promise<void> => {
-    const Game_Name: string = req.headers.gameID as string;
+    const Game_Name: string = req.headers.gameIdentifier as string;
     console.log(`Incoming GET request to /game...  ${Game_Name}`);
 
 

@@ -197,7 +197,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
             }
         });
     });
-    console.log(`For subcat { ${subCatOBJ.name} } there are ${runsInSubCategory.length} runs`);
+
     const rankedOutput = rankerFunc(OutputArray);
     return rankedOutput;
 }

@@ -61,8 +61,10 @@ export async function findDefaultCategory(categoryData: CategoryDataFinalized, s
     const [topSubCategory] = subCatsSortedByAmountOfRuns;
     const { parentCategoryId } = topSubCategory;
     const output = {
-        parent: categoryData.categories[parentCategoryId].name,
-        subcat: topSubCategory.name,
+        parentName: categoryData.categories[parentCategoryId].name,
+        parentID: categoryData.categories[parentCategoryId].id,
+        subcatName: topSubCategory.name,
+        subcatID: topSubCategory.id,
         combo: `${categoryData.categories[parentCategoryId].name} - ${topSubCategory.name}`
     };
 

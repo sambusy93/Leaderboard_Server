@@ -43,16 +43,15 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
         if (finishedSubCatInfo.isSingleLevel) { continue; }
         const subCatKeys = Object.keys(finishedSubCatInfo);
 
-        console.log(subCatKeys);
-        const [firstEntry] = subCatKeys;
-        const defaultSubCategory = finishedSubCatInfo[firstEntry];
+        const firstEntry = subCatKeys[0] ? subCatKeys[0] : undefined;
+
         categories[id] = {
             name,
             id,
             runs: undefined,
-            defaultSubCatID: defaultSubCategory.id,
-            defaultSubCatName: defaultSubCategory.name,
-            extraSortVariables: defaultSubCategory.extraSortVariables,
+            defaultSubCatID: firstEntry ? finishedSubCatInfo[firstEntry].id : null,
+            defaultSubCatName: firstEntry ? finishedSubCatInfo[firstEntry].name : null,
+            extraSortVariables: firstEntry ? finishedSubCatInfo[firstEntry].extraSortVariables : null,
             subCategories: finishedSubCatInfo
         };
 
@@ -60,8 +59,8 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
     }
 
     outputData.subcategories = unwrapSubCats(subCatsHolder);
-
     outputData.categories = categories;
+
     return outputData;
 }
 

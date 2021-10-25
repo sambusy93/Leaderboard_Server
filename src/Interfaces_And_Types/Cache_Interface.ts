@@ -59,9 +59,9 @@ export interface CategoryEntryData {
     runs: number | undefined;
     name: string;
     id: string;
-    defaultSubCatID: string;
-    defaultSubCatName: string;
-    extraSortVariables: extraSortStructure;
+    defaultSubCatID: string | null;
+    defaultSubCatName: string | null;
+    extraSortVariables: extraSortStructure | null;
     subCategories: Record<string, SubCatData>;
 }
 

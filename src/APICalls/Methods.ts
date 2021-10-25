@@ -37,11 +37,13 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
 
     for (const category in catData) {
         const { name, id } = catData[category];
-        console.log(catData[category]);
+        console.log(catData[category].name);
         //ADD CHECK FOR SINGLE LEVEL SUBCATEGORIES HERE.
         const finishedSubCatInfo = handleSubCatData(catData[category]);// {{subCatID: {SUBCATINFO}, ...}, {...}}
         if (finishedSubCatInfo.isSingleLevel) { continue; }
         const subCatKeys = Object.keys(finishedSubCatInfo);
+
+        console.log(subCatKeys);
         const [firstEntry] = subCatKeys;
         const defaultSubCategory = finishedSubCatInfo[firstEntry];
         categories[id] = {

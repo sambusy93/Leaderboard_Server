@@ -37,7 +37,6 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
 
     for (const category in catData) {
         const { name, id } = catData[category];
-        console.log(catData[category].name);
         //ADD CHECK FOR SINGLE LEVEL SUBCATEGORIES HERE.
         const finishedSubCatInfo = handleSubCatData(catData[category]);// {{subCatID: {SUBCATINFO}, ...}, {...}}
         if (finishedSubCatInfo.isSingleLevel) { continue; }
@@ -150,6 +149,7 @@ export async function handleRunnerData(runnerData: RunnerDataWrapper): Promise<R
 }
 
 export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCatData, extraSortVariables?: extraSortStructure): FullRunData[] {
+    console.log(subCatOBJ);
     const OutputArray = [] as FullRunData[];
     const platforms: Record<string, string> = platformData;
 

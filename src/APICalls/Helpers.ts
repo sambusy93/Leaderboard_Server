@@ -103,7 +103,6 @@ async function fuckingbullshit(link: string, subcategories: InnerSubCatDataStruc
 }
 
 export function unwrapSubCats(arrayOfSubCatInfo: Record<string, SubCatData>[]): InnerSubCatDataStructure {
-    console.log('unwrapping subcats');
     const output: Record<string, SubCatData> = {};
 
     for (let i = 0; i < arrayOfSubCatInfo.length; i++) { //each entry in the array can contain multiple subcategories

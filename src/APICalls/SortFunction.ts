@@ -4,6 +4,7 @@ export type RunComparator = (a: any, b: any) => number;//IF YOU CAN FIX THESE TY
 type Comparable = number | string | null;
 
 export function rankerFunc(unrankedArray: FullRunData[]): FullRunData[] {
+    console.log(`first entry in runsArray is ${unrankedArray[0]}`);
     const timeToSortBy = unrankedArray[0].runner.sortVariables.timewithoutloads != 0 ? SortableHeader.TIMEWITHOUTLOADS : SortableHeader.TIMEWITHLOADS;
 
     unrankedArray.sort(getComparator(timeToSortBy, true));

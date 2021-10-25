@@ -20,8 +20,7 @@ export async function handleGameData(someData: APIGameResponse): Promise<GameDat
             releaseDate: someData.data['release-date'],
             numberOfCategories: Object.keys(categoryData.categories).length,
             numberOfSubCategories: Object.keys(categoryData.subcategories).length,
-            mainParentCategory: defaultCatInfo.parent,
-            topCategoryCombo: defaultCatInfo.combo,
+            defaultCategoryInfo: defaultCatInfo,
             assets: someData.data.assets
         },
         categoryData,

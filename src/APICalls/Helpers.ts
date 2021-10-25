@@ -1,4 +1,4 @@
-import { CategoryDataFinalized, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
+import { CategoryDataFinalized, DefaultCatInfo, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
 import { getRunData } from "./Calls";
 
 
@@ -44,7 +44,7 @@ export function countUniqueRunners(data: GameDataFinalized): number {
 
 
 
-export async function findDefaultCategory(categoryData: CategoryDataFinalized, sorter?: string): Promise<Record<string, string>> {
+export async function findDefaultCategory(categoryData: CategoryDataFinalized, sorter?: string): Promise<DefaultCatInfo> {
     const subCatsWithVariable = Object.values(categoryData.subcategories);
     const subCats = subCatsWithVariable.filter(entry => entry.name);
 

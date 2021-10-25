@@ -103,9 +103,16 @@ export interface GameData {
     releaseDate: string;
     numberOfCategories: number;
     numberOfSubCategories: number;
-    mainParentCategory: string;
-    topCategoryCombo: string;
+    defaultCategoryInfo: DefaultCatInfo;
     assets: { [key in AssetType]: Asset | null };
+}
+
+export interface DefaultCatInfo {
+    parentName: string,
+    parentID: string,
+    subcatName: string,
+    subcatID: string,
+    combo: string
 }
 
 export interface GameDataFinalized {

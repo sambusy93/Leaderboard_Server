@@ -149,7 +149,6 @@ export async function handleRunnerData(runnerData: RunnerDataWrapper): Promise<R
 }
 
 export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCatData, extraSortVariables?: extraSortStructure): FullRunData[] {
-    console.log(subCatOBJ);
     const OutputArray = [] as FullRunData[];
     const platforms: Record<string, string> = platformData;
 

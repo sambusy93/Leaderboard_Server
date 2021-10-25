@@ -70,24 +70,26 @@ export async function findDefaultCategory(categoryData: CategoryDataFinalized, s
 }
 
 export async function addRunsToBaseData(dataWithoutRunCount: GameDataFinalized): Promise<GameDataFinalized> {
-    const unparsed_game_name = dataWithoutRunCount.gameData.name;
-    const GAME_NAME = unparsed_game_name.replace(/\s/g, '').toLowerCase();
+    const GAME_NAME = dataWithoutRunCount.gameData.abbreviation;
 
-    const { categories, subcategories } = dataWithoutRunCount.categoryData;
+    const { categories } = dataWithoutRunCount.categoryData;
     const categoryIDS = Object.keys(categories);
     for (let c = 0; c < categoryIDS.length; c++) {
         const categoryID = categoryIDS[c];
+        const { subCategories } = categories[categoryID];
         const link = `https://www.speedrun.com/api/v1/leaderboards/${GAME_NAME}/category/${categoryID}`;
 
-        const amountOfRunsInCategory = await fuckingbullshit(link, subcategories);
+        const amountOfRunsInCategory = await addUpRunsInCategory(link, subCategories);
         categories[categoryID].runs = amountOfRunsInCategory;
     }
     return dataWithoutRunCount;
 }
 
-async function fuckingbullshit(link: string, subcategories: InnerSubCatDataStructure): Promise<number> {
+async function addUpRunsInCategory(link: string, subcategories: InnerSubCatDataStructure): Promise<number> {
     let counter = 0;
     const subCategoryIDS = Object.keys(subcategories);
+
+
     for (let i = 0; i < subCategoryIDS.length; i++) {
         const subcatID = subCategoryIDS[i];
         if (subcatID === 'variables') { continue; }

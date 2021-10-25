@@ -1,70 +1,8 @@
-import { APIGameResponse, APICategoryData } from '../Interfaces_And_Types/API_Types';
-import { CategoryDataFinalized, CategoryDataStructure, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from '../Interfaces_And_Types/Cache_Interface';
-import { getRunData } from './Calls';
-
-
-///////////////////////////////
-// Modify data from API call //
-///////////////////////////////
-export function addRunCountToCategoryObjects(data: GameDataFinalized): GameDataFinalized {
-    if (!data.categoryData.categories || !data.categoryData.subcategories) { console.log('addRunCountToCategoryObjects did not recieve proper data'); return {} as GameDataFinalized; }
-
-    let runCounter = 0;
-    const catData = data.categoryData.categories;
-    const categories = Object.values(catData);
-    const subCatsWithVariable = Object.values(data.categoryData.subcategories);
-    const subcats = subCatsWithVariable.filter(entry => entry.name);
-
-    for (const category of categories) {
-        for (const subcat of subcats) {
-            if (!subcat.parentCategoryId) {
-                continue; //if there is no id property then there were only sorting variables, no runs to add
-            }
-            runCounter += subcat.runs.length;
-        }
-        data.categoryData.categories[category.id].runs = runCounter;
-    }
-
-    return data;
-}
-
-
-export function countUniqueRunners(data: GameDataFinalized): number {
-    const allRunners = [];
-    const subCatsKeyedByID = Object.values(data.categoryData.subcategories);
-
-    for (let i = 0; i < subCatsKeyedByID.length; i++) {
-        const subcat = subCatsKeyedByID[i];
-        const { runs } = subcat;
-        allRunners.push(runs);
-    }
-
-    const uniqueRunners = new Set(allRunners);
-    return uniqueRunners.size;
-}
-
-
-
-export async function findDefaultCategory(categoryData: CategoryDataFinalized, sorter?: string): Promise<string> {
-    const subCatsWithVariable = Object.values(categoryData.subcategories);
-    const subCats = subCatsWithVariable.filter(entry => entry.name);
-
-    let subCatsSortedByAmountOfRuns: SubCatData[] = [];
-
-    for (let i = 0; i < subCats.length; i++) {
-        subCatsSortedByAmountOfRuns = subCats.sort((a, b) => {
-            if (a.runs === undefined) { return 1; }
-            if (b.runs === undefined) { return -1; }
-            return b.runs.length - a.runs.length;
-        }).slice(0, 1);
-    }
-
-    const [topSubCategory] = subCatsSortedByAmountOfRuns;
-    const { parentCategoryId } = topSubCategory;
-
-    if (sorter === 'combo') { return `${categoryData.categories[parentCategoryId].name} - ${topSubCategory.name}`; }
-    return parentCategoryId;
-}
+import { APIGameResponse, APICategoryData, APIRunData, RunnerDataWrapper } from '../Interfaces_And_Types/API_Types';
+import { AllSortVariables, CategoryDataFinalized, CategoryDataStructure, extraSortStructure, extraSortVariable, FullRunData, GameDataFinalized, InnerSubCatDataStructure, RunnerDataFinalized, SubCatData } from '../Interfaces_And_Types/Cache_Interface';
+import { findDefaultCategory, unwrapSubCats } from './Helpers';
+import { rankerFunc } from './SortFunction';
+import platformData from '../FixedDataThatShouldntBeHereLong/platforms.json'
 
 export async function handleGameData(someData: APIGameResponse): Promise<GameDataFinalized> {
     //handle single-level or broken links
@@ -72,6 +10,7 @@ export async function handleGameData(someData: APIGameResponse): Promise<GameDat
 
     //call the handleData function first so we can access some of their info 
     const categoryData = await handleCatData(someData.data.categories.data);
+    const defaultCatInfo = await findDefaultCategory(categoryData);
 
     const outputData = {
         gameData: {
@@ -79,10 +18,10 @@ export async function handleGameData(someData: APIGameResponse): Promise<GameDat
             abbreviation: someData.data.abbreviation,
             id: someData.data.id,
             releaseDate: someData.data['release-date'],
-            numberOfCategories: Object.keys(categoryData).length,
+            numberOfCategories: Object.keys(categoryData.categories).length,
             numberOfSubCategories: Object.keys(categoryData.subcategories).length,
-            mainParentCategory: await findDefaultCategory(categoryData),
-            topCategoryCombo: await findDefaultCategory(categoryData, 'combo'),
+            mainParentCategory: defaultCatInfo.parent,
+            topCategoryCombo: defaultCatInfo.combo,
             assets: someData.data.assets
         },
         categoryData,
@@ -94,6 +33,7 @@ export async function handleGameData(someData: APIGameResponse): Promise<GameDat
 async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFinalized> {
     const outputData = { subcategories: {} } as CategoryDataFinalized;
     const categories: CategoryDataStructure = {};
+    const subCatsHolder = [];
 
     for (const category in catData) {
         const { name, id } = catData[category];
@@ -113,14 +53,16 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
             subCategories: finishedSubCatInfo
         };
 
-        outputData.subcategories = finishedSubCatInfo;
+        subCatsHolder.push(finishedSubCatInfo);
     }
+
+    outputData.subcategories = unwrapSubCats(subCatsHolder);
 
     outputData.categories = categories;
     return outputData;
 }
 
-function handleSubCatData(categoryData: APICategoryData): InnerSubCatDataStructure {
+function handleSubCatData(categoryData: APICategoryData): Record<string, SubCatData> {
     const dataHolder: Record<string, any> = {};
     const { name, id, variables } = categoryData;
 
@@ -139,9 +81,7 @@ function handleSubCatData(categoryData: APICategoryData): InnerSubCatDataStructu
                 id: entry.id,
                 choices
             };
-            dataHolder.variables = extraSortVariables;
         }
-        else if (entry.scope.type === 'single-level') { dataHolder.isSingleLevel = true; }
         //otherwise, its a proper subcategory and we need the relevant info
         else {
             for (let c = 0; c < subcatIDs.length; c++) {
@@ -155,6 +95,8 @@ function handleSubCatData(categoryData: APICategoryData): InnerSubCatDataStructu
                     defaultName: entry.values.default ? entry.values.values[defaultID].label : undefined,
                     parentCategoryName: name,
                     parentCategoryId: id,
+                    extraSortVariables: extraSortVariables ? extraSortVariables : undefined,
+                    isSingleLevel: entry.scope.type === 'single-level' ? true : false,
                     runs: undefined
                 };
             }
@@ -163,37 +105,96 @@ function handleSubCatData(categoryData: APICategoryData): InnerSubCatDataStructu
     return dataHolder;
 }
 
-export async function addRunsToBaseData(dataWithoutRunCount: GameDataFinalized): Promise<GameDataFinalized> {
-    const unparsed_game_name = dataWithoutRunCount.gameData.name;
-    const GAME_NAME = unparsed_game_name.replace(/\s/g, '').toLowerCase();
+export async function handleRunnerData(runnerData: RunnerDataWrapper): Promise<RunnerDataFinalized> {
+    //declare empty output
+    const output = {} as RunnerDataFinalized;
+    //extract variables that are always present
+    const { data } = runnerData;
+    const { id, names } = data;
+    //set output fields to known values
+    output.id = id;
+    output.name = names.international;
 
-    const { categories, subcategories } = dataWithoutRunCount.categoryData;
-    const categoryIDS = Object.keys(categories);
-    for (let c = 0; c < categoryIDS.length; c++) {
-        const categoryID = categoryIDS[c];
-        const link = `https://www.speedrun.com/api/v1/leaderboards/${GAME_NAME}/category/${categoryID}`;
-
-        const amountOfRunsInCategory = await fuckingbullshit(link, subcategories);
-        categories[categoryID].runs = amountOfRunsInCategory;
+    //check if user has gradient name styling and set output fields accordingly
+    if (data['name-style']['color-from'].light) {
+        const lightStyle = {
+            'font-size': '2rem',
+            'margin-bottom': '4%',
+            background: `linear-gradient(${data['name-style']['color-from'].light}, ${data['name-style']['color-to'].light})`,
+            'background-clip': 'text',
+            '-webkit-background-clip': 'text',
+            '-moz-background-clip': 'text',
+            '-moz-text-fill-color': 'transparent',
+            '-webkit-text-fill-color': 'transparent',
+            'background-size': '100%'
+        };
+        output.styleLight = lightStyle;
     }
-    return dataWithoutRunCount;
+    if (data['name-style']['color-from'].dark) {
+        const darkStyle = {
+            'font-size': '2rem',
+            'margin-bottom': '4%',
+            'background': `linear-gradient(${data['name-style']['color-from'].dark}, ${data['name-style']['color-to'].dark})`,
+            'background-clip': 'text',
+            '-webkit-background-clip': 'text',
+            '-moz-background-clip': 'text',
+            '-moz-text-fill-color': 'transparent',
+            '-webkit-text-fill-color': 'transparent',
+            'background-size': '100%'
+        };
+        output.styleDark = darkStyle;
+    }
+    return output;
 }
 
-async function fuckingbullshit(link: string, subcategories: InnerSubCatDataStructure): Promise<number> {
-    let counter = 0;
-    const subCategoryIDS = Object.keys(subcategories);
-    for (let i = 0; i < subCategoryIDS.length; i++) {
-        const subcatID = subCategoryIDS[i];
-        if (subcatID === 'variables') { continue; }
-        try {
-            const tempData = await getRunData(link, subcategories[subcatID]);
-            subcategories[subcatID].runs = tempData;
-            counter += subcategories[subcatID].runs.length;
-        } catch (e) {
-            console.error(e);
+export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCatData, extraSortVariables?: extraSortStructure): FullRunData[] {
+    const OutputArray = [] as FullRunData[];
+    const platforms: Record<string, string> = platformData;
+
+    runsInSubCategory.forEach(runEntry => {
+        const { run } = runEntry;
+        if (run.status.status !== 'verified') { return; }
+
+        const { values } = run;
+        const sortVariables: AllSortVariables = {
+            timewithoutloads: run.times.realtime_noloads_t,
+            timewithloads: run.times.realtime_t,
+            platform: platforms[run.system.platform],
+            category: subCatOBJ.parentCategoryName,
+            subcategory: subCatOBJ.name,
+            date: run.date
+        };
+
+        if (extraSortVariables && extraSortVariables.name) {
+            const variableOBJs: extraSortVariable[] = Object.values(extraSortVariables);
+            const runnervariableIDS = Object.keys(values);
+            for (let i = 0; i < runnervariableIDS.length; i++) {
+                const runnerVariableNameID = runnervariableIDS[i];
+                const runnerVariableValueID = values[runnerVariableNameID];
+                const singleVariable = variableOBJs.find(variable => variable.id = runnerVariableNameID);
+                if (!singleVariable) { continue; }
+
+                sortVariables[singleVariable.name] = singleVariable.choices[runnerVariableValueID];
+            }
         }
-    }
-    return counter;
+
+        OutputArray.push({
+            rank: runEntry.place,
+            runner: {
+                id: run.players[0].id,
+                uri: run.players[0].uri,
+                values,
+                sortVariables
+            },
+            ids: {
+                category: run.category,
+                subcategory: subCatOBJ.id,
+                platform: run.system.platform
+            }
+        });
+    });
+    const rankedOutput = rankerFunc(OutputArray);
+    return rankedOutput;
 }
 
 

@@ -54,7 +54,7 @@ export function getComparator(sorter: SortableHeader, shouldAscend: boolean): Ru
             };
         case 'softdate':
             return (a: SoftRunData, b: SoftRunData): number => {
-                return shouldAscend ? compare(a.runner.date, b.runner.date) : compare(b.runner.date, a.runner.date);
+                return shouldAscend ? compare(a.date, b.date) : compare(b.date, a.date);
             };
         default:
             return;
@@ -87,13 +87,10 @@ interface SortVariables {
 }
 
 interface SoftRunData {
-    rank?: string;
-    runner: {
-        runner: string;
-        rank: string;
-        category: string;
-        date: string;
-    }
+    runner: string;
+    rank: string;
+    category: string;
+    date: string;
 }
 
 enum SortableHeader {

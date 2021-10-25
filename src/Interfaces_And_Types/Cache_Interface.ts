@@ -62,7 +62,7 @@ export interface CategoryEntryData {
     defaultSubCatID: string;
     defaultSubCatName: string;
     extraSortVariables: extraSortStructure;
-    subCategories: InnerSubCatDataStructure;
+    subCategories: Record<string, SubCatData>;
 }
 
 export interface CategoryDataStructure {

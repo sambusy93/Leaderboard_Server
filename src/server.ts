@@ -35,7 +35,7 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
     if (CACHE.Games[Game_Name] === undefined) {
         CACHE.Games[Game_Name] = await getGameData(GAME_URL);
-        console.log('CACHE.Game_Name was undefined');
+        console.log(`${Game_Name} has been added to the cache`);
     }
 
     try {
@@ -57,7 +57,7 @@ app.get('/runner', async (req: string, res: any): Promise<void> => {
 
     if (CACHE.Runners[Runner_ID] === undefined) {
         CACHE.Runners[Runner_ID] = await getRunnerData(Runner_URL);
-        console.log('CACHE.Runner_ID was undefined');
+        console.log(`${Runner_ID} has been added to the cache`);
     }
 
     try {

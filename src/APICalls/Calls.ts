@@ -3,6 +3,7 @@ import { GameDataFinalized, RunnerDataFinalized, SubCatData, extraSortStructure,
 import { handleGameData, addRunsToBaseData, addRunCountToCategoryObjects, countUniqueRunners } from "./Methods";
 import { apiGameRequest, apiRunnerRequest, apiRunsRequest } from "./Requests";
 import platformData from '../FixedDataThatShouldntBeHereLong/platforms.json'
+import { getComparator, rankerFunc } from "./SortFunction";
 
 export async function getGameData(URL: string): Promise<GameDataFinalized> {
     //get the raw SRC data
@@ -128,5 +129,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
             }
         });
     });
-    return OutputArray;
+    const rankedOutput = rankerFunc(OutputArray);
+    return rankedOutput;
 }
+

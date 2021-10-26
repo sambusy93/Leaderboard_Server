@@ -21,7 +21,8 @@ export async function getGameData(URL: string): Promise<GameDataFinalized> {
 }
 
 export async function getRunnerData(URL: string): Promise<RunnerDataFinalized> {
-    const runnerData = await apiRunnerRequest(URL);
+    const decodedURL = decodeURI(URL);
+    const runnerData = await apiRunnerRequest(decodedURL);
     if (!runnerData) { return {} as RunnerDataFinalized; }
 
     return handleRunnerData(runnerData);

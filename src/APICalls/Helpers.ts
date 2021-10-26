@@ -106,6 +106,8 @@ async function addUpRunsInCategory(link: string, subcategories: InnerSubCatDataS
     return counter;
 }
 
+
+
 export function unwrapSubCats(arrayOfSubCatInfo: Record<string, SubCatData>[]): InnerSubCatDataStructure {
     const output: Record<string, SubCatData> = {};
 

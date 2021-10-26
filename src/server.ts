@@ -51,16 +51,9 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
 app.get('/runner', async (req: string, res: any): Promise<void> => {
     let Runner_ID: string = res.req.query.runnerID;
-    const Runner_URL: string = res.req.headers.runneruri;
-    console.log(res.req.headers);
+    const Runner_URL: string = `https://www.speedrun.com/api/v1/users/${Runner_ID}`
 
     console.log(`Incoming GET request to /runner...  ${Runner_ID}`);
-
-    if (Runner_ID === undefined) {
-        const data = await getRunnerData(Runner_URL);
-        Runner_ID = data.name;
-        CACHE.Runners[Runner_ID] = data;
-    }
 
     if (CACHE.Runners[Runner_ID] === undefined) {
         CACHE.Runners[Runner_ID] = await getRunnerData(Runner_URL);

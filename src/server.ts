@@ -21,7 +21,7 @@ const CACHE: ServerCache = { Games: {}, Runners: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, runneruri');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     next();
 });
 

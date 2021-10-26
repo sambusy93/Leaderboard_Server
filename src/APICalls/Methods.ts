@@ -36,6 +36,7 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
 
     for (const category in catData) {
         const { name, id } = catData[category];
+        console.log(name);
         //ADD CHECK FOR SINGLE LEVEL SUBCATEGORIES HERE.
         const finishedSubCatInfo = handleSubCatData(catData[category]);// {{subCatID: {SUBCATINFO}, ...}, {...}}
         if (finishedSubCatInfo.isSingleLevel) { continue; }
@@ -87,6 +88,7 @@ function handleSubCatData(categoryData: APICategoryData): Record<string, SubCatD
             for (let c = 0; c < subcatIDs.length; c++) {
                 const subCatid = subcatIDs[c];
                 const subCatname = entry.values.values[subCatid].label;
+                console.log(subCatname);
                 const defaultID = entry.values.default;
                 dataHolder[subCatid] = {
                     id: subCatid,

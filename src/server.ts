@@ -51,9 +51,9 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
 app.get('/runner', async (req: string, res: any): Promise<void> => {
     const Runner_ID = res.req.query.runnerID;
-    console.log(`Incoming GET request to /runner...  ${Runner_ID}`);
-
     const Runner_URL = res.req.headers.runnerURI;
+
+    console.log(`Incoming GET request to /runner...  ${Runner_ID}`);
 
     if (CACHE.Runners[Runner_ID] === undefined) {
         CACHE.Runners[Runner_ID] = await getRunnerData(Runner_URL);

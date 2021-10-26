@@ -158,6 +158,8 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
     runsInSubCategory.forEach(runEntry => {
         const { run } = runEntry;
         const nameMatch = run.players[0].name ? run.players[0].name.match(regExForGettingName) : null;
+        const newID = nameMatch != undefined ? nameMatch.pop() : undefined;
+
         if (run.status.status !== 'verified') { return; }
 
         const { values } = run;
@@ -186,7 +188,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
         OutputArray.push({
             rank: runEntry.place,
             runner: {
-                id: nameMatch ? nameMatch[0] : run.players[0].id,
+                id: newID ? newID.trim() : run.players[0].id,
                 uri: decodeURI(run.players[0].uri),
                 values,
                 sortVariables

@@ -21,7 +21,7 @@ const CACHE: ServerCache = { Games: {}, Runners: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, runnerURI');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, runneruri');
     next();
 });
 
@@ -51,7 +51,7 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
 app.get('/runner', async (req: string, res: any): Promise<void> => {
     let Runner_ID: string = res.req.query.runnerID;
-    const Runner_URL: string = res.req.headers.runnerURI;
+    const Runner_URL: string = res.req.headers.runneruri;
     console.log(res.req.headers);
 
     console.log(`Incoming GET request to /runner...  ${Runner_ID}`);

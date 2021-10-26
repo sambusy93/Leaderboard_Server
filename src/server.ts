@@ -52,6 +52,7 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 app.get('/runner', async (req: string, res: any): Promise<void> => {
     let Runner_ID: string = res.req.query.runnerID;
     const Runner_URL: string = res.req.headers.runnerURI;
+    console.log(Runner_URL);
 
     console.log(`Incoming GET request to /runner...  ${Runner_ID}`);
 

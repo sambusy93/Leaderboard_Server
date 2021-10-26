@@ -88,7 +88,7 @@ function handleSubCatData(categoryData: APICategoryData): Record<string, SubCatD
             for (let c = 0; c < subcatIDs.length; c++) {
                 const subCatid = subcatIDs[c];
                 const subCatname = entry.values.values[subCatid].label;
-                console.log(subCatname);
+                console.log(`${subCatname} - ${entry.scope.type}`);
                 const defaultID = entry.values.default;
                 dataHolder[subCatid] = {
                     id: subCatid,

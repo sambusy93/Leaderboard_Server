@@ -24,7 +24,6 @@ export async function getRunnerData(URL: string): Promise<RunnerDataFinalized> {
     const decodedURL = decodeURI(URL);
     console.log(`processing ${decodedURL}`);
     const runnerData = await apiRunnerRequest(decodedURL);
-    console.log(runnerData);
     if (!runnerData) { return {} as RunnerDataFinalized; }
 
     return handleRunnerData(runnerData);

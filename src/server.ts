@@ -21,7 +21,7 @@ const CACHE: ServerCache = { Games: {}, Runners: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, runnerURI');
     next();
 });
 
@@ -53,7 +53,7 @@ app.get('/runner', async (req: string, res: any): Promise<void> => {
     const Runner_ID = res.req.query.runnerID;
     console.log(`Incoming GET request to /runner...  ${Runner_ID}`);
 
-    const Runner_URL = `https://www.speedrun.com/api/v1/users/${Runner_ID}`;
+    const Runner_URL = res.req.headers.runnerURI;
 
     if (CACHE.Runners[Runner_ID] === undefined) {
         CACHE.Runners[Runner_ID] = await getRunnerData(Runner_URL);

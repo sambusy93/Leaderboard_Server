@@ -185,7 +185,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
             rank: runEntry.place,
             runner: {
                 id: run.players[0].id,
-                uri: run.players[0].uri,
+                uri: decodeURI(run.players[0].uri),
                 values,
                 sortVariables
             },

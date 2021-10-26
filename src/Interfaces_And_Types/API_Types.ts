@@ -119,6 +119,7 @@ export interface APIRunData {
         }
         players: {
             rel: string;
+            name?: string;
             id: string;
             uri: string;
         }[];

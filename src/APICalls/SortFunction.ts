@@ -1,3 +1,5 @@
+import { FullRunData } from "../Interfaces_And_Types/Cache_Interface";
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RunComparator = (a: any, b: any) => number;//IF YOU CAN FIX THESE TYPES, BLESSINGS SHALL FLOW FROM THOUST CUP
 //type SoftComparator = (a: SoftRunData, b: SoftRunData) => number; //i dont like this. this is bodge
@@ -62,30 +64,8 @@ export function getComparator(sorter: SortableHeader, shouldAscend: boolean): Ru
     }
 }
 
-interface FullRunData {
-    rank: number;
-    runner: {
-        id: string;
-        uri: string;
-        values: Record<string, string>;
-        sortVariables: AllSortVariables;
-    }
-    ids: {
-        category: string;
-        subcategory: string;
-        platform: string;
-    }
-}
 
-interface SortVariables {
-    timewithloads: number,
-    timewithoutloads: number,
-    platform: string,
-    category: string,
-    subcategory: string,
-    date: string,
-    patch?: string
-}
+
 
 interface SoftRunData {
     runner: string;
@@ -106,9 +86,3 @@ enum SortableHeader {
     CATEGORY = 'category',
     SUBCATEGORY = 'subcategory'
 }
-
-interface ExtraSortVariableEntries {
-    [key: string]: string | number;
-}
-
-type AllSortVariables = SortVariables & ExtraSortVariableEntries;

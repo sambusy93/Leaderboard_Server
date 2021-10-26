@@ -15,7 +15,8 @@ export interface SortVariables {
     category: string,
     subcategory: string,
     date: string,
-    patch?: string
+    patch?: string,
+    name?: string
 }
 
 export interface ExtraSortVariableEntries {

@@ -36,7 +36,6 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
 
     for (const category in catData) {
         const { name, id } = catData[category];
-        console.log(name);
         //ADD CHECK FOR SINGLE LEVEL SUBCATEGORIES HERE.
         const finishedSubCatInfo = handleSubCatData(catData[category]);// {{subCatID: {SUBCATINFO}, ...}, {...}}
         if (finishedSubCatInfo.isSingleLevel) { continue; }
@@ -88,7 +87,6 @@ function handleSubCatData(categoryData: APICategoryData): Record<string, SubCatD
             for (let c = 0; c < subcatIDs.length; c++) {
                 const subCatid = subcatIDs[c];
                 const subCatname = entry.values.values[subCatid].label;
-                console.log(`${subCatname} - ${entry.scope.type}`);
                 const defaultID = entry.values.default;
                 dataHolder[subCatid] = {
                     id: subCatid,
@@ -151,6 +149,7 @@ export async function handleRunnerData(runnerData: RunnerDataWrapper): Promise<R
 
 export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCatData, extraSortVariables?: extraSortStructure): FullRunData[] {
     const OutputArray = [] as FullRunData[];
+    const regExForGettingName = /\(([^)]+)\)/;
 
     if (runsInSubCategory.length < 1) { return OutputArray };
 
@@ -158,6 +157,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
 
     runsInSubCategory.forEach(runEntry => {
         const { run } = runEntry;
+        const nameMatch = run.players[0].name ? run.players[0].name.match(regExForGettingName) : null;
         if (run.status.status !== 'verified') { return; }
 
         const { values } = run;
@@ -186,7 +186,7 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
         OutputArray.push({
             rank: runEntry.place,
             runner: {
-                id: run.players[0].id,
+                id: nameMatch ? nameMatch[0] : run.players[0].id,
                 uri: decodeURI(run.players[0].uri),
                 values,
                 sortVariables

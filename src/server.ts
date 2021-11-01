@@ -53,6 +53,7 @@ app.get('/games', async (req: Request, res: any): Promise<void> => {
     console.log(`Incoming GET request to /games...`);
 
     if (CACHE.MultiGame[1] === undefined) {
+        console.log('MultiGame Cache is unfilled')
         CACHE.MultiGame = await getGamesData();
         console.log(`Cache.MultiGame has been added filled`);
     }

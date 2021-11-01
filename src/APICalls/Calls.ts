@@ -22,7 +22,7 @@ export async function getGameData(URL: string): Promise<GameDataFinalized> {
 }
 
 export async function getGamesData(): Promise<MultiGameItem[]> {
-    const URL = `http://speedrun.com/api/v1/games`;
+    const URL = `http://speedrun.com/api/v1/games?max=50`; //TODO: CHANGE TO DYNAMIC MAX AND PAGINATION
     const gamesData = await apiGamesRequest(URL);
     if (!gamesData) { return [] as MultiGameItem[]; }
 

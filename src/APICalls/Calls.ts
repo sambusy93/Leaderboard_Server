@@ -1,7 +1,8 @@
 import { GameDataFinalized, RunnerDataFinalized, SubCatData, extraSortStructure, FullRunData, AllSortVariables, extraSortVariable } from "../Interfaces_And_Types/Cache_Interface";
-import { handleGameData, handleRunData, handleRunnerData } from "./Methods";
-import { apiGameRequest, apiRunnerRequest, apiRunsRequest } from "./Requests";
+import { handleGameData, handleGamesData, handleRunData, handleRunnerData } from "./Methods";
+import { apiGameRequest, apiGamesRequest, apiRunnerRequest, apiRunsRequest } from "./Requests";
 import { addRunsToBaseData, addRunCountToCategoryObjects, countUniqueRunners } from "./Helpers";
+import { MultiGameItem } from "../Interfaces_And_Types/API_Types";
 
 export async function getGameData(URL: string): Promise<GameDataFinalized> {
     //get the raw SRC data
@@ -18,6 +19,14 @@ export async function getGameData(URL: string): Promise<GameDataFinalized> {
     dataWithRuns.gameData.uniqueRunners = countUniqueRunners(dataWithRuns);
 
     return dataWithRuns;
+}
+
+export async function getGamesData(): Promise<MultiGameItem[]> {
+    const URL = `http://speedrun.com/api/v1/games/`;
+    const gamesData = await apiGamesRequest(URL);
+    if (!gamesData) { return [] as MultiGameItem[]; }
+
+    return handleGamesData(gamesData);
 }
 
 export async function getRunnerData(URL: string): Promise<RunnerDataFinalized> {

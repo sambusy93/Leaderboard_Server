@@ -1,3 +1,5 @@
+import { MultiGameItem } from "./API_Types";
+
 export interface extraSortVariable {
     id: string;
     name: string,
@@ -150,5 +152,6 @@ export interface RunnerDataFinalized {
 
 export interface ServerCache {
     Games: Record<string, GameDataFinalized>,
-    Runners: Record<string, RunnerDataFinalized>
+    Runners: Record<string, RunnerDataFinalized>,
+    MultiGame: MultiGameItem[]
 }

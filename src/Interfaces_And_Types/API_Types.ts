@@ -1,7 +1,21 @@
-import { AssetType, Asset } from "./Cache_Interface";
+import { AssetType, Asset, GameData } from "./Cache_Interface";
 
-export interface APIGameResponse {
+export interface APISingleGameResponse {
     data: APIGameData;
+}
+
+export interface APISingleGameResponseWithCatData {
+    data: APIGameDataWithCatData;
+}
+
+export interface APIMultiGameResponse {
+    data: APIGameData[];
+}
+
+export interface MultiGameItem {
+    name: string;
+    image: string | undefined;
+    released: string;
 }
 
 export interface APIGameData {
@@ -35,6 +49,9 @@ export interface APIGameData {
     created: string;
     assets: { [key in AssetType]: Asset | null };
     links: Links[];
+}
+
+export interface APIGameDataWithCatData extends APIGameData {
     categories: {
         data: APICategoryData[];
     }
@@ -219,4 +236,8 @@ export interface RunnerDataStructure {
             uri: string
         }
     ]
+}
+
+export interface MultiGameResponse {
+    [key: string]: APIGameData
 }

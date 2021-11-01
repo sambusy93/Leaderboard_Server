@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Request } from 'express';
 import { ServerCache } from './Interfaces_And_Types/Cache_Interface';
-import { getGameData, getRunnerData } from './APICalls/Calls';
+import { getGameData, getGamesData, getRunnerData } from './APICalls/Calls';
 const app: any = express();
 
 ////////////////
@@ -17,7 +17,7 @@ const app: any = express();
 //massage data serverside
 
 //const GAME_URL = `http://speedrun.com/api/v1/games/${Game_Name}?embed=categories.variables`;
-const CACHE: ServerCache = { Games: {}, Runners: {} };
+const CACHE: ServerCache = { Games: {}, Runners: {}, MultiGame: [] };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -40,6 +40,25 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
     try {
         res.status(200).send(CACHE.Games[Game_Name]);
+        console.log('GET request proccessed successfully');
+    } catch (err) {
+        console.log(err);
+        res.status(500).send();
+        console.log('GET request failed');
+    }
+}
+);
+
+app.get('/games', async (req: Request, res: any): Promise<void> => {
+    console.log(`Incoming GET request to /games...`);
+
+    if (CACHE.MultiGame[1] === undefined) {
+        CACHE.MultiGame = await getGamesData();
+        console.log(`Cache.MultiGame has been added filled`);
+    }
+
+    try {
+        res.status(200).send(CACHE.MultiGame);
         console.log('GET request proccessed successfully');
     } catch (err) {
         console.log(err);

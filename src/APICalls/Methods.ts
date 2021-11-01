@@ -1,10 +1,10 @@
-import { APIGameResponse, APICategoryData, APIRunData, RunnerDataWrapper } from '../Interfaces_And_Types/API_Types';
+import { APICategoryData, APIRunData, RunnerDataWrapper, APISingleGameResponseWithCatData, APIMultiGameResponse, MultiGameItem } from '../Interfaces_And_Types/API_Types';
 import { AllSortVariables, CategoryDataFinalized, CategoryDataStructure, extraSortStructure, extraSortVariable, FullRunData, GameDataFinalized, InnerSubCatDataStructure, RunnerDataFinalized, SubCatData } from '../Interfaces_And_Types/Cache_Interface';
 import { findDefaultCategory, unwrapSubCats } from './Helpers';
 import { rankerFunc } from './SortFunction';
 import platformData from '../FixedDataThatShouldntBeHereLong/platforms.json'
 
-export async function handleGameData(someData: APIGameResponse): Promise<GameDataFinalized> {
+export async function handleGameData(someData: APISingleGameResponseWithCatData): Promise<GameDataFinalized> {
     //handle single-level or broken links
     if (!someData.data) { console.log('someData.data in handleGameData() failed '); return {} as GameDataFinalized; }
 
@@ -205,4 +205,19 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
     return rankedOutput;
 }
 
+export function handleGamesData(multiGameData: APIMultiGameResponse): MultiGameItem[] {
+    const output: MultiGameItem[] = [];
+
+    multiGameData.data.forEach(datum => {
+        output.push(
+            {
+                name: datum.names.international,
+                image: datum.assets['cover-medium']?.uri,
+                released: datum['release-date']
+            }
+        )
+    })
+
+    return output;
+}
 

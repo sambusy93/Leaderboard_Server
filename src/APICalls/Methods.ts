@@ -212,7 +212,8 @@ export function handleGamesData(multiGameData: APIMultiGameResponse): MultiGameI
         output.push(
             {
                 name: datum.names.international,
-                image: datum.assets['cover-medium']?.uri,
+                id: datum.id,
+                image: datum.assets['cover-tiny']?.uri,
                 released: datum['release-date']
             }
         )

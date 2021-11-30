@@ -15,6 +15,7 @@ export interface APIMultiGameResponse {
 export interface MultiGameItem {
     name: string;
     id: string;
+    abbreviation: string;
     image: string | undefined;
     released: string;
 }

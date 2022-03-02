@@ -1,8 +1,9 @@
-import { APICategoryData, APIRunData, RunnerDataWrapper, APISingleGameResponseWithCatData, APIMultiGameResponse, MultiGameItem } from '../Interfaces_And_Types/API_Types';
-import { AllSortVariables, CategoryDataFinalized, CategoryDataStructure, extraSortStructure, extraSortVariable, FullRunData, GameDataFinalized, InnerSubCatDataStructure, RunnerDataFinalized, SubCatData } from '../Interfaces_And_Types/Cache_Interface';
-import { findDefaultCategory, unwrapSubCats } from './Helpers';
+import { APICategoryData, APIRunData, RunnerDataWrapper, APISingleGameResponseWithCatData, APIMultiGameResponse, MultiGameItem, APIPlatformResponse, PlatformData } from '../Interfaces_And_Types/API_Types';
+import { AllSortVariables, CategoriesWrapper, CategoryDataStructure, extraSortStructure, extraSortVariable, FullRunData, GameDataFinalized, RunnerDataFinalized, SubCatData, SubcategoriesWrapper } from '../Interfaces_And_Types/Cache_Interface';
+import { findDefaultCategory } from './Helpers';
 import { rankerFunc } from './SortFunction';
 import platformData from '../FixedDataThatShouldntBeHereLong/platforms.json'
+import { getDeveloperInfo } from './Calls';
 
 export async function handleGameData(someData: APISingleGameResponseWithCatData): Promise<GameDataFinalized> {
     //handle single-level or broken links
@@ -10,18 +11,21 @@ export async function handleGameData(someData: APISingleGameResponseWithCatData)
 
     //call the handleData function first so we can access some of their info 
     const categoryData = await handleCatData(someData.data.categories.data);
-    const defaultCatInfo = await findDefaultCategory(categoryData);
+    const defaultCategory = await findDefaultCategory(categoryData);
+    const { id, abbreviation, assets } = someData.data;
 
     const outputData = {
         gameData: {
             name: someData.data.names.twitch,
-            abbreviation: someData.data.abbreviation,
-            id: someData.data.id,
+            abbreviation,
+            weblink: `https://www.speedrun.com/api/v1/games/${id}`,
+            id,
+            developer: await getDeveloperInfo(someData.data.developers[0]),
             releaseDate: someData.data['release-date'],
             numberOfCategories: Object.keys(categoryData.categories).length,
             numberOfSubCategories: Object.keys(categoryData.subcategories).length,
-            defaultCategoryInfo: defaultCatInfo,
-            assets: someData.data.assets
+            defaultCategoryInfo: defaultCategory,
+            assets
         },
         categoryData,
     };
@@ -29,21 +33,28 @@ export async function handleGameData(someData: APISingleGameResponseWithCatData)
     return outputData;
 }
 
-async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFinalized> {
-    const outputData = { subcategories: {} } as CategoryDataFinalized;
-    const categories: CategoryDataStructure = {};
-    const subCatsHolder = [];
+async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataStructure> {
+    const outputData = {} as CategoryDataStructure;
+    const categories = {} as CategoriesWrapper;
+    let subcategories = {} as SubcategoriesWrapper;
 
     for (const category in catData) {
-        const { name, id } = catData[category];
-        //ADD CHECK FOR SINGLE LEVEL SUBCATEGORIES HERE.
+        const { name, id, type } = catData[category];
         const finishedSubCatInfo = handleSubCatData(catData[category]);// {{subCatID: {SUBCATINFO}, ...}, {...}}
-        if (finishedSubCatInfo.isSingleLevel) { continue; }
         const subCatKeys = Object.keys(finishedSubCatInfo);
-
         const firstEntry = subCatKeys[0] ? subCatKeys[0] : undefined;
 
-        categories[id] = {
+
+        if (type === 'per-level') {
+            categories.singleLevel[id] = {
+                id,
+                runs: undefined,
+                extraSortVariables: firstEntry ? finishedSubCatInfo[firstEntry].extraSortVariables : null,
+                subCategories: finishedSubCatInfo
+            };
+        }
+
+        categories.multiLevel[id] = {
             name,
             id,
             runs: undefined,
@@ -53,10 +64,10 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataFi
             subCategories: finishedSubCatInfo
         };
 
-        subCatsHolder.push(finishedSubCatInfo);
+        subcategories = finishedSubCatInfo
     }
 
-    outputData.subcategories = unwrapSubCats(subCatsHolder);
+    outputData.subcategories = subcategories;
     outputData.categories = categories;
 
     return outputData;
@@ -205,19 +216,31 @@ export function handleRunData(runsInSubCategory: APIRunData[], subCatOBJ: SubCat
     return rankedOutput;
 }
 
-export function handleGamesData(multiGameData: APIMultiGameResponse): MultiGameItem[] {
-    const output: MultiGameItem[] = [];
+export async function handleGamesData(multiGameData: APIMultiGameResponse): Promise<Record<string, MultiGameItem>> {
+    const output = {} as Record<string, MultiGameItem>;
 
-    multiGameData.data.forEach(datum => {
-        output.push(
-            {
-                name: datum.names.international,
-                abbreviation: datum.abbreviation,
-                id: datum.id,
-                image: datum.assets['cover-tiny']?.uri,
-                released: datum['release-date']
-            }
-        )
+    multiGameData.data.forEach(async datum => {
+        const { abbreviation, id } = datum;
+        output[id] =
+        {
+            name: datum.names.international,
+            abbreviation,
+            id,
+            developer: await getDeveloperInfo(datum.developers[0]),
+            image: datum.assets['cover-tiny']?.uri,
+            released: datum['release-date']
+        }
+    })
+
+    return output;
+}
+
+export async function handlePlatformData(PlatformData: APIPlatformResponse): Promise<Record<string, string>> {
+    const output = {} as PlatformData;
+
+    PlatformData.data.forEach(platform => { //all we need is id's mapped to the english name
+        const { id, name } = platform;
+        output[id] = name;
     })
 
     return output;

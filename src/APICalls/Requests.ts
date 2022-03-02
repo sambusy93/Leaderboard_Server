@@ -1,4 +1,4 @@
-import { APICategoryLeaderboardWrapper, APIMultiGameResponse, APISingleGameResponseWithCatData, RunnerDataWrapper } from "../Interfaces_And_Types/API_Types";
+import { APICategoryLeaderboardWrapper, APIDeveloperData, APIMultiGameResponse, APIPlatformResponse, APISingleGameResponseWithCatData, DeveloperAPIResponse, RunnerDataWrapper } from "../Interfaces_And_Types/API_Types";
 import axios from 'axios';
 
 //Single Game Request
@@ -49,4 +49,29 @@ export async function apiRunnerRequest(url: string): Promise<RunnerDataWrapper |
     } catch (err) {
         throw new Error('HTTP-Error: ' + err);
     }
+}
+
+//Developer Info Request
+export async function apiDeveloperRequest(url: string): Promise<APIDeveloperData | undefined> {
+    try {
+        const response = await axios.get(url);
+        if (response.status === 200) {
+            return response.data as APIDeveloperData;
+        }
+    } catch (err) {
+        throw new Error('HTTP-Error: ' + err);
+    }
+}
+
+//Get All Known Platforms
+export async function apiPlatformsRequest(url: string): Promise<APIPlatformResponse | undefined> {
+    try {
+        const response = await axios.get(url);
+        if (response.status === 200) {
+            return response.data as APIPlatformResponse;
+        }
+    } catch (err) {
+        throw new Error('HTTP-Error: ' + err);
+    }
+
 }

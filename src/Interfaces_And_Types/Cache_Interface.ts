@@ -1,4 +1,4 @@
-import { MultiGameItem } from "./API_Types";
+import { MultiGameItem, Platform } from "./API_Types";
 
 export interface extraSortVariable {
     id: string;
@@ -58,23 +58,32 @@ export interface InnerSubCatDataStructure {
     [key: string]: SubCatData
 }
 
-export interface CategoryEntryData {
+export interface SingleLevelCategoryEntry {
     runs: number | undefined;
-    name: string;
     id: string;
-    defaultSubCatID: string | null;
-    defaultSubCatName: string | null;
+    level?: string
     extraSortVariables: extraSortStructure | null;
     subCategories: Record<string, SubCatData>;
 }
 
-export interface CategoryDataStructure {
-    [key: string]: CategoryEntryData;
+export interface MultiLevelCategoryEntry extends SingleLevelCategoryEntry {
+    name: string,
+    defaultSubCatID: string | null,
+    defaultSubCatName: string | null
 }
 
-export interface CategoryDataFinalized {
-    categories: CategoryDataStructure,
-    subcategories: InnerSubCatDataStructure
+export interface CategoryDataStructure {
+    categories: CategoriesWrapper,
+    subcategories: SubcategoriesWrapper
+}
+
+export interface CategoriesWrapper {
+    multiLevel: Record<string, MultiLevelCategoryEntry>,
+    singleLevel: Record<string, SingleLevelCategoryEntry>
+}
+
+export interface SubcategoriesWrapper {
+    [key: string]: SubCatData
 }
 
 export interface Asset {
@@ -103,6 +112,7 @@ export interface GameData {
     name: string;
     abbreviation: string;
     id: string;
+    weblink: string;
     releaseDate: string;
     numberOfCategories: number;
     numberOfSubCategories: number;
@@ -120,7 +130,7 @@ export interface DefaultCatInfo {
 
 export interface GameDataFinalized {
     gameData: GameData;
-    categoryData: CategoryDataFinalized
+    categoryData: CategoryDataStructure
 }
 
 export interface RunnerDataFinalized {
@@ -150,8 +160,11 @@ export interface RunnerDataFinalized {
     }
 }
 
+
+
 export interface ServerCache {
     Games: Record<string, GameDataFinalized>,
     Runners: Record<string, RunnerDataFinalized>,
-    MultiGame: MultiGameItem[]
+    MultiGame: Record<string, MultiGameItem>,
+    Platforms: Record<string, string>
 }

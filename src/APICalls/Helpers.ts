@@ -1,4 +1,4 @@
-import { CategoryDataFinalized, DefaultCatInfo, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
+import { CategoryDataStructure, DefaultCatInfo, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
 import { getRunData } from "./Calls";
 
 
@@ -21,7 +21,7 @@ export function addRunCountToCategoryObjects(data: GameDataFinalized): GameDataF
             }
             runCounter += subcat.runs.length;
         }
-        data.categoryData.categories[category.id].runs = runCounter;
+        data.categoryData.categories.multiLevel[category.id].runs = runCounter;
     }
 
     return data;
@@ -44,7 +44,7 @@ export function countUniqueRunners(data: GameDataFinalized): number {
 
 
 
-export async function findDefaultCategory(categoryData: CategoryDataFinalized, sorter?: string): Promise<DefaultCatInfo> {
+export async function findDefaultCategory(categoryData: CategoryDataStructure, sorter?: string): Promise<DefaultCatInfo> {
     const subCatsWithVariable = Object.values(categoryData.subcategories);
     const subCats = subCatsWithVariable.filter(entry => entry.name);
 
@@ -61,11 +61,11 @@ export async function findDefaultCategory(categoryData: CategoryDataFinalized, s
     const [topSubCategory] = subCatsSortedByAmountOfRuns;
     const { parentCategoryId } = topSubCategory;
     const output = {
-        parentName: categoryData.categories[parentCategoryId].name,
-        parentID: categoryData.categories[parentCategoryId].id,
+        parentName: categoryData.categories.multiLevel[parentCategoryId].name,
+        parentID: categoryData.categories.multiLevel[parentCategoryId].id,
         subcatName: topSubCategory.name,
         subcatID: topSubCategory.id,
-        combo: `${categoryData.categories[parentCategoryId].name} - ${topSubCategory.name}`
+        combo: `${categoryData.categories.multiLevel[parentCategoryId].name} - ${topSubCategory.name}`
     };
 
     return output;
@@ -78,11 +78,11 @@ export async function addRunsToBaseData(dataWithoutRunCount: GameDataFinalized):
     const categoryIDS = Object.keys(categories);
     for (let c = 0; c < categoryIDS.length; c++) {
         const categoryID = categoryIDS[c];
-        const { subCategories } = categories[categoryID];
+        const { subCategories } = categories.multiLevel[categoryID];
         const link = `https://www.speedrun.com/api/v1/leaderboards/${GAME_NAME}/category/${categoryID}`;
 
         const amountOfRunsInCategory = await addUpRunsInCategory(link, subCategories);
-        categories[categoryID].runs = amountOfRunsInCategory;
+        categories.multiLevel[categoryID].runs = amountOfRunsInCategory;
     }
     return dataWithoutRunCount;
 }

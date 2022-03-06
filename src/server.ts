@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Request } from 'express';
 import { ServerCache } from './Interfaces_And_Types/Cache_Interface';
-import { getGameData, getGamesData, getRunnerData } from './APICalls/Calls';
+import { getGameData, getGamesData, getPlatformData, getRunnerData } from './APICalls/Calls';
 const app: any = express();
 
 ////////////////
@@ -17,7 +17,7 @@ const app: any = express();
 //massage data serverside
 
 //const GAME_URL = `http://speedrun.com/api/v1/games/${Game_Name}?embed=categories.variables`;
-const CACHE: ServerCache = { Games: {}, Runners: {}, MultiGame: [] };
+const CACHE: ServerCache = { Games: {}, Runners: {}, MultiGame: {}, Platforms: {} };
 
 app.use((_req: any, res: any, next: any) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -91,6 +91,18 @@ app.get('/runner', async (req: string, res: any): Promise<void> => {
     }
 }
 );
+
+app.get('/platforms', async (req: string, res: any): Promise<void> => {
+    CACHE.Platforms = await getPlatformData();
+    try {
+        res.status(200).send(CACHE.Platforms);
+        console.log('Platform Data has been updated');
+    } catch (err) {
+        console.log(err);
+        res.status(500).send();
+        console.log('Platform Data update failed');
+    }
+});
 
 console.log(`Express listening on ${4000}`);
 app.listen(4000);

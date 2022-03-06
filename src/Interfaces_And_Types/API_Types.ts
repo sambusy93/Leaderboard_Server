@@ -4,6 +4,10 @@ export interface APISingleGameResponse {
     data: APIGameData;
 }
 
+export interface DeveloperAPIResponse {
+    data: APIDeveloperData;
+}
+
 export interface APISingleGameResponseWithCatData {
     data: APIGameDataWithCatData;
 }
@@ -12,9 +16,25 @@ export interface APIMultiGameResponse {
     data: APIGameData[];
 }
 
+export interface APIPlatformResponse {
+    data: Platform[]
+}
+
+export interface PlatformData {
+    [key: string]: string
+}
+
+export interface Platform {
+    id: string,
+    name: string,
+    released: number,
+    links: Links[]
+}
+
 export interface MultiGameItem {
     name: string;
     id: string;
+    developer: string,
     abbreviation: string;
     image: string | undefined;
     released: string;
@@ -77,7 +97,7 @@ export interface APICategoryData {
     miscellaneous: boolean;
     links: Links[];
     variables: {
-        data: Array<SubCategory>;
+        data: SubCategory[];
     }
 }
 
@@ -87,6 +107,7 @@ export interface SubCategory {
     category: null;
     scope: {
         type: string;
+        leve?: string;
     };
     mandatory: boolean;
     'user-defined': boolean;
@@ -220,26 +241,16 @@ export interface RunnerDataStructure {
             uri: string
         }
     },
-    links: [
-        {
-            rel: string,
-            uri: string
-        },
-        {
-            rel: string,
-            uri: string
-        },
-        {
-            rel: string,
-            uri: string
-        },
-        {
-            rel: string,
-            uri: string
-        }
-    ]
+    links: Links[]
 }
 
 export interface MultiGameResponse {
     [key: string]: APIGameData
+}
+
+export interface APIDeveloperData {
+    id: string,
+    name: string,
+    links: Links[]
+
 }

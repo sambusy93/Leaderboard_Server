@@ -32,6 +32,7 @@ app.get('/game', async (req: Request, res: any): Promise<void> => {
 
 
     const GAME_URL = `http://speedrun.com/api/v1/games/${Game_Name}?embed=categories.variables`;
+    console.log(`fetching game from ${GAME_URL}`);
 
     if (CACHE.Games[Game_Name] === undefined) {
         CACHE.Games[Game_Name] = await getGameData(GAME_URL);

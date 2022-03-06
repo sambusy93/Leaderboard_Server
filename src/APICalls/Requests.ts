@@ -16,6 +16,7 @@ export async function apiGameRequest(url: string): Promise<APISingleGameResponse
 
 //Multi-Game Request
 export async function apiGamesRequest(url: string): Promise<APIMultiGameResponse | undefined> {
+
     try {
         const response = await axios.get(url);
         if (response.status === 200) {

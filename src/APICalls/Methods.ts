@@ -46,18 +46,21 @@ async function handleCatData(catData: APICategoryData[]): Promise<CategoryDataSt
 
 
         if (type === 'per-level') {
-            categories.singleLevel[id] = {
+            categories[id] = {
                 id,
+                name,
                 runs: undefined,
                 extraSortVariables: firstEntry ? finishedSubCatInfo[firstEntry].extraSortVariables : null,
+                "is-singleLevel": true, //This is a flag we will use in the coming rewrite to handle more game categories
                 subCategories: finishedSubCatInfo
             };
         }
 
-        categories.multiLevel[id] = {
+        categories[id] = {
             name,
             id,
             runs: undefined,
+            'is-singleLevel': false,
             defaultSubCatID: firstEntry ? finishedSubCatInfo[firstEntry].id : null,
             defaultSubCatName: firstEntry ? finishedSubCatInfo[firstEntry].name : null,
             extraSortVariables: firstEntry ? finishedSubCatInfo[firstEntry].extraSortVariables : null,

@@ -21,7 +21,7 @@ export function addRunCountToCategoryObjects(data: GameDataFinalized): GameDataF
             }
             runCounter += subcat.runs.length;
         }
-        data.categoryData.categories.multiLevel[category.id].runs = runCounter;
+        data.categoryData.categories[category.id].runs = runCounter;
     }
 
     return data;
@@ -61,11 +61,11 @@ export async function findDefaultCategory(categoryData: CategoryDataStructure, s
     const [topSubCategory] = subCatsSortedByAmountOfRuns;
     const { parentCategoryId } = topSubCategory;
     const output = {
-        parentName: categoryData.categories.multiLevel[parentCategoryId].name,
-        parentID: categoryData.categories.multiLevel[parentCategoryId].id,
+        parentName: categoryData.categories[parentCategoryId].name,
+        parentID: categoryData.categories[parentCategoryId].id,
         subcatName: topSubCategory.name,
         subcatID: topSubCategory.id,
-        combo: `${categoryData.categories.multiLevel[parentCategoryId].name} - ${topSubCategory.name}`
+        combo: `${categoryData.categories[parentCategoryId].name} - ${topSubCategory.name}`
     };
 
     return output;
@@ -78,11 +78,11 @@ export async function addRunsToBaseData(dataWithoutRunCount: GameDataFinalized):
     const categoryIDS = Object.keys(categories);
     for (let c = 0; c < categoryIDS.length; c++) {
         const categoryID = categoryIDS[c];
-        const { subCategories } = categories.multiLevel[categoryID];
+        const { subCategories } = categories[categoryID];
         const link = `https://www.speedrun.com/api/v1/leaderboards/${GAME_NAME}/category/${categoryID}`;
 
         const amountOfRunsInCategory = await addUpRunsInCategory(link, subCategories);
-        categories.multiLevel[categoryID].runs = amountOfRunsInCategory;
+        categories[categoryID].runs = amountOfRunsInCategory;
     }
     return dataWithoutRunCount;
 }

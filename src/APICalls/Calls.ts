@@ -55,6 +55,7 @@ export async function getRunData(url: string, subCategoryOBJ: SubCatData, extraS
 
 //Get Info on a Single Developer
 export async function getDeveloperInfo(developerID: string): Promise<string> {
+    if (!developerID) { return "Unknown Developer" }
     const url = `http://speedrun.com/api/v1/developers/${developerID}`;
     const data = await apiDeveloperRequest(url);
     return data ? data.name : "Unknown Developer";

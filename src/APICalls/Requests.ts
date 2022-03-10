@@ -10,7 +10,7 @@ export async function apiGameRequest(url: string): Promise<APISingleGameResponse
             return response.data as APISingleGameResponseWithCatData;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Game Request threw this HTTP-Error: ' + err);
     }
 }
 
@@ -23,7 +23,7 @@ export async function apiGamesRequest(url: string): Promise<APIMultiGameResponse
             return response.data as APIMultiGameResponse;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Games Request threw this HTTP-Error: ' + err);
     }
 }
 
@@ -36,7 +36,7 @@ export async function apiRunsRequest(url: string): Promise<APICategoryLeaderboar
             return response.data as APICategoryLeaderboardWrapper;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Runs Request threw this HTTP-Error: ' + err);
     }
 }
 
@@ -48,7 +48,7 @@ export async function apiRunnerRequest(url: string): Promise<RunnerDataWrapper |
             return response.data as RunnerDataWrapper;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Runner Request threw this HTTP-Error: ' + err);
     }
 }
 
@@ -60,7 +60,7 @@ export async function apiDeveloperRequest(url: string): Promise<APIDeveloperData
             return response.data as APIDeveloperData;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Developer Request threw this HTTP-Error: ' + err);
     }
 }
 
@@ -72,7 +72,7 @@ export async function apiPlatformsRequest(url: string): Promise<APIPlatformRespo
             return response.data as APIPlatformResponse;
         }
     } catch (err) {
-        throw new Error('HTTP-Error: ' + err);
+        throw new Error('The Platforms Request threw this HTTP-Error: ' + err);
     }
 
 }

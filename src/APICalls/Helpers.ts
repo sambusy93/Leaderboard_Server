@@ -1,4 +1,4 @@
-import { CategoryDataStructure, DefaultCatInfo, GameDataFinalized, InnerSubCatDataStructure, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
+import { CategoriesWrapper, CategoryDataStructure, DefaultCatInfoBySubCat, DefaultCatInfoByTopCat, GameDataFinalized, InnerSubCatDataStructure, MultiLevelCategoryEntry, SingleLevelCategoryEntry, SubCatData } from "../Interfaces_And_Types/Cache_Interface";
 import { getRunData } from "./Calls";
 
 
@@ -44,8 +44,12 @@ export function countUniqueRunners(data: GameDataFinalized): number {
 
 
 
-export async function findDefaultCategory(categoryData: CategoryDataStructure, sorter?: string): Promise<DefaultCatInfo> {
+export async function findDefaultCategory(categoryData: CategoryDataStructure, sorter?: string): Promise<DefaultCatInfoBySubCat | DefaultCatInfoByTopCat> {
     const subCatsWithVariable = Object.values(categoryData.subcategories);
+
+    //if there are no subcategories by which to determine the default category we find the default by top level categories
+    if (subCatsWithVariable.length < 1) { return findDefaultCatFromCats(categoryData); }
+
     const subCats = subCatsWithVariable.filter(entry => entry.name);
 
     let subCatsSortedByAmountOfRuns: SubCatData[] = [];
@@ -58,8 +62,6 @@ export async function findDefaultCategory(categoryData: CategoryDataStructure, s
         }).slice(0, 1);
     }
 
-
-    console.log(subCatsSortedByAmountOfRuns);
     const [topSubCategory] = subCatsSortedByAmountOfRuns;
     const { parentCategoryId } = topSubCategory;
     const output = {
@@ -72,6 +74,28 @@ export async function findDefaultCategory(categoryData: CategoryDataStructure, s
 
     return output;
 }
+
+async function findDefaultCatFromCats(categoryData: CategoryDataStructure): Promise<DefaultCatInfoByTopCat> {
+    const unsortedCategories = Object.values(categoryData.categories);
+    let sortedCategories: (MultiLevelCategoryEntry | SingleLevelCategoryEntry)[] = [];
+    for (let i = 0; i < unsortedCategories.length; i++) {
+        sortedCategories = unsortedCategories.sort((a, b) => {
+            if (a.runs === undefined) { return 1; }
+            if (b.runs === undefined) { return -1; }
+            return b.runs - a.runs;
+        }).slice(0, 1);
+    }
+
+    const [defaultCat] = sortedCategories;
+    const output = {
+        parentName: defaultCat.name,
+        parentID: defaultCat.id,
+        combo: defaultCat.name
+    };
+    return output;
+}
+
+
 
 export async function addRunsToBaseData(dataWithoutRunCount: GameDataFinalized): Promise<GameDataFinalized> {
     const GAME_NAME = dataWithoutRunCount.gameData.abbreviation;

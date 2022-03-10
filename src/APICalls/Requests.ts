@@ -60,7 +60,7 @@ export async function apiDeveloperRequest(url: string): Promise<APIDeveloperData
             return response.data as APIDeveloperData;
         }
     } catch (err) {
-        throw new Error('The Developer Request threw this HTTP-Error: ' + err);
+        throw new Error('The Developer Request threw this HTTP-Error: ' + err + ' IT TRIED TO HIT THIS ENDPOINT: ' + url);
     }
 }
 

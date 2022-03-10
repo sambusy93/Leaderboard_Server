@@ -59,15 +59,16 @@ export interface InnerSubCatDataStructure {
 }
 
 export interface SingleLevelCategoryEntry {
+    name: string,
     runs: number | undefined;
     id: string;
     level?: string
     extraSortVariables: extraSortStructure | null;
+    "is-singleLevel": boolean | undefined;
     subCategories: Record<string, SubCatData>;
 }
 
 export interface MultiLevelCategoryEntry extends SingleLevelCategoryEntry {
-    name: string,
     defaultSubCatID: string | null,
     defaultSubCatName: string | null
 }
@@ -78,8 +79,7 @@ export interface CategoryDataStructure {
 }
 
 export interface CategoriesWrapper {
-    multiLevel: Record<string, MultiLevelCategoryEntry>,
-    singleLevel: Record<string, SingleLevelCategoryEntry>
+    [key: string]: MultiLevelCategoryEntry | SingleLevelCategoryEntry
 }
 
 export interface SubcategoriesWrapper {

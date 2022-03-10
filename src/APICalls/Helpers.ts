@@ -58,6 +58,8 @@ export async function findDefaultCategory(categoryData: CategoryDataStructure, s
         }).slice(0, 1);
     }
 
+
+    console.log(subCatsSortedByAmountOfRuns);
     const [topSubCategory] = subCatsSortedByAmountOfRuns;
     const { parentCategoryId } = topSubCategory;
     const output = {

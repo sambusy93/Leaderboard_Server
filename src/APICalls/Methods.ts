@@ -12,7 +12,10 @@ export async function handleGameData(someData: APISingleGameResponseWithCatData)
     //call the handleData function first so we can access some of their info 
     const categoryData = await handleCatData(someData.data.categories.data);
     const defaultCategory = await findDefaultCategory(categoryData);
-    const { id, abbreviation, assets } = someData.data;
+    const { id, abbreviation, assets, developers } = someData.data;
+    const developerToDisplay = developers[0] ? developers[0] : null;
+    let devInfo = "";
+    if (developerToDisplay != null) { devInfo = await getDeveloperInfo(someData.data.developers[0]) }
 
     const outputData = {
         gameData: {
@@ -20,7 +23,7 @@ export async function handleGameData(someData: APISingleGameResponseWithCatData)
             abbreviation,
             weblink: `https://www.speedrun.com/api/v1/games/${id}`,
             id,
-            developer: await getDeveloperInfo(someData.data.developers[0]),
+            developer: devInfo,
             releaseDate: someData.data['release-date'],
             numberOfCategories: Object.keys(categoryData.categories).length,
             numberOfSubCategories: Object.keys(categoryData.subcategories).length,
